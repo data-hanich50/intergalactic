@@ -42,7 +42,7 @@ return_code_t transmitter__transmit(uint8_t *message, size_t *len, uint8_t **enc
     uint8_t encoded_byte = 0;
 
     encoded_message = (uint8_t *)malloc(
-        (*len * BITS_IN_BYTE + DATA_SIZE_IN_BITS - 1)  / DATA_SIZE_IN_BITS
+        ceil(*len * BITS_IN_BYTE / DATA_SIZE_IN_BITS)
     );
 
     ON_TRUE_SET_VALUE_AND_GOTO_CLEANUP(
@@ -78,11 +78,13 @@ return_code_t transmitter__transmit(uint8_t *message, size_t *len, uint8_t **enc
 
         return_code = transmitter__encode_byte(temp, &encoded_byte);
         CLEANUP_IF_FAIL(return_code);
+
         encoded_message[next_index] = encoded_byte;
+        ++next_index;
     }
 
     *encoded = encoded_message;
-    *len = next_index + 1;
+    *len = next_index;
 
     return_code = RETURN_CODE_SUCCESS;
 
